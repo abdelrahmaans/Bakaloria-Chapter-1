@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 1: Multi-Mode Mastery & Exam Arena</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .shake {
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-3px, 0, 0); }
+      20%, 80% { transform: translate3d(5px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+      40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+    .pop-in {
+      animation: popIn 0.3s ease-out forwards;
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.97); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-600 selection:text-white">
+
+  <!-- Real-Time Top HUD Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/90 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
+          <i class="fa-solid fa-gamepad text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-base md:text-lg font-black bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
+            Chapter 1: Multi-Mode Arena
+          </h1>
+          <p class="text-xs text-slate-400">Strict Gamified Evaluation & Terminology Challenge</p>
+        </div>
+      </div>
+
+      <!-- Player Stats Counter -->
+      <div class="flex items-center gap-2 md:gap-4 bg-slate-800/90 px-3.5 py-1.5 rounded-full border border-slate-700">
+        <!-- Hearts / Lives -->
+        <div id="livesContainer" class="flex items-center gap-1 text-rose-500 text-sm font-bold pl-1">
+          <i class="fa-solid fa-heart"></i>
+          <i class="fa-solid fa-heart"></i>
+          <i class="fa-solid fa-heart"></i>
+        </div>
+
+        <div class="h-4 w-px bg-slate-700"></div>
+
+        <!-- Level Indicator -->
+        <div class="flex items-center gap-1.5 text-indigo-300 text-xs md:text-sm font-bold">
+          <i class="fa-solid fa-shield-halved text-indigo-400"></i>
+          <span id="levelBadge">Lvl 1</span>
+        </div>
+
+        <div class="h-4 w-px bg-slate-700"></div>
+
+        <!-- Score Counter -->
+        <div class="flex items-center gap-1 text-amber-400 text-xs md:text-sm font-bold">
+          <i class="fa-solid fa-coins"></i>
+          <span id="scoreBadge">0</span>
+          <span class="text-[10px] text-slate-400 font-normal">pts</span>
+        </div>
+
+        <div class="h-4 w-px bg-slate-700"></div>
+
+        <!-- Streak Counter -->
+        <div class="flex items-center gap-1 text-orange-400 text-xs md:text-sm font-bold pr-1">
+          <i class="fa-solid fa-fire"></i>
+          <span id="streakBadge">0</span>
+          <span class="text-[10px] text-slate-400 font-normal">streak</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- XP Level Progression Bar -->
+    <div class="w-full bg-slate-800 h-1.5">
+      <div id="levelProgress" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-1.5 transition-all duration-300" style="width: 0%"></div>
+    </div>
+  </header>
+
+  <!-- Main Body Content -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+    <!-- 1. INITIAL MODE SELECTION SCREEN -->
+    <div id="startScreen" class="glass-card rounded-2xl p-6 md:p-9 border border-slate-700 flex flex-col gap-6 pop-in">
+      <div class="text-center max-w-xl mx-auto">
+        <span class="text-xs font-extrabold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">Gamified Examination</span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-2">Select Your Assessment Protocol</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1">
+          Each error deducts points, resets streaks, and costs a heart. Shuffled upon reload to prevent memorization or duplicate attempts.
+        </p>
+      </div>
+
+      <!-- Mode Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <button onclick="chooseMode('mixed')" class="p-4 rounded-xl border border-indigo-500/40 bg-indigo-950/20 hover:bg-indigo-900/40 text-left transition flex flex-col justify-between group">
+          <div class="flex items-start justify-between">
+            <div class="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-lg mb-2 border border-indigo-500/30 group-hover:scale-110 transition">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30">Recommended</span>
+          </div>
+          <div>
+            <h4 class="font-extrabold text-white text-base">Mixed Gauntlet (All Question Types)</h4>
+            <p class="text-xs text-slate-400 mt-1">Dynamically cycles through MCQs, Matching pairs, Sequence puzzles, and Scenario checks.</p>
+          </div>
+        </button>
+
+        <button onclick="chooseMode('mcq')" class="p-4 rounded-xl border border-slate-700 bg-slate-900/60 hover:border-slate-500 hover:bg-slate-800 text-left transition flex flex-col justify-between group">
+          <div class="w-9 h-9 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-lg mb-2 border border-blue-500/30 group-hover:scale-110 transition">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+          <div>
+            <h4 class="font-extrabold text-white text-base">Standard MCQ Arena</h4>
+            <p class="text-xs text-slate-400 mt-1">Single-attempt multiple-choice questions focusing on terms, concepts, and added definitions.</p>
+          </div>
+        </button>
+
+        <button onclick="chooseMode('matching')" class="p-4 rounded-xl border border-slate-700 bg-slate-900/60 hover:border-slate-500 hover:bg-slate-800 text-left transition flex flex-col justify-between group">
+          <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg mb-2 border border-emerald-500/30 group-hover:scale-110 transition">
+            <i class="fa-solid fa-link"></i>
+          </div>
+          <div>
+            <h4 class="font-extrabold text-white text-base">Match & Connect Challenges</h4>
+            <p class="text-xs text-slate-400 mt-1">Connect technical terms to their exact syllabus definitions. Wrong connections trigger penalties.</p>
+          </div>
+        </button>
+
+        <button onclick="chooseMode('ordering')" class="p-4 rounded-xl border border-slate-700 bg-slate-900/60 hover:border-slate-500 hover:bg-slate-800 text-left transition flex flex-col justify-between group">
+          <div class="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg mb-2 border border-amber-500/30 group-hover:scale-110 transition">
+            <i class="fa-solid fa-arrow-down-short-wide"></i>
+          </div>
+          <div>
+            <h4 class="font-extrabold text-white text-base">Hierarchy & Flow Ordering</h4>
+            <p class="text-xs text-slate-400 mt-1">Rearrange scrambled layers and hierarchies into their strict logical sequence.</p>
+          </div>
+        </button>
+      </div>
+
+      <!-- Strict Penalty Alert -->
+      <div class="p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 flex items-center gap-3 text-xs text-slate-400">
+        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-base"></i>
+        <span>Anti-Cheating Policy: Each card offers one attempt. Refreshing restarts with newly shuffled questions and zero points.</span>
+      </div>
+    </div>
+
+    <!-- 2. ACTIVE QUIZ ARENA (DYNAMIC FOR ALL QUESTION TYPES) -->
+    <div id="quizScreen" class="hidden flex-col gap-4">
+      <!-- Breadcrumb / Lesson Tag -->
+      <div class="flex items-center justify-between text-xs font-bold text-slate-400 px-1">
+        <span id="questionCategoryBadge" class="px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-indigo-300">
+          Lesson
+        </span>
+        <span>Question <span id="currentQuestionNum" class="text-white font-mono font-bold">1</span> of <span id="totalQuestionsNum" class="font-mono">15</span></span>
+      </div>
+
+      <!-- Question Frame -->
+      <div id="questionCard" class="glass-card rounded-2xl p-6 md:p-8 border border-slate-700 flex flex-col gap-4 pop-in shadow-xl">
+        <div class="flex items-start justify-between gap-3">
+          <span id="qTypeBadge" class="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+            Type
+          </span>
+          <span id="questionValueBadge" class="text-xs font-mono font-bold text-amber-400">+15 XP (Mistake: -8)</span>
+        </div>
+
+        <h3 id="questionText" class="text-base md:text-lg font-bold text-slate-100 leading-snug">
+          Loading question text...
+        </h3>
+
+        <!-- Dynamic Body: Injected according to question type -->
+        <div id="dynamicBody" class="w-full mt-2">
+          <!-- Options OR Matching Area OR Sequence Sorter rendered here -->
+        </div>
+
+        <!-- Feedback & Review Banner -->
+        <div id="feedbackBanner" class="hidden mt-2 p-4 rounded-xl text-xs md:text-sm leading-relaxed border transition-all">
+          <div id="feedbackTitle" class="font-extrabold flex items-center gap-2 mb-1"></div>
+          <div id="feedbackExplanation" class="text-slate-300 font-normal"></div>
+          <div class="mt-3 flex justify-end">
+            <button id="nextBtn" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-lg text-xs transition flex items-center gap-1.5 shadow-md">
+              <span>Next Challenge</span> <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. ASSESSMENT SUMMARY / SCORECARD SCREEN -->
+    <div id="resultScreen" class="hidden glass-card rounded-2xl p-6 md:p-10 border border-slate-700 text-center flex-col items-center gap-6 pop-in">
+      <div id="resultIconBox" class="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shadow-xl">
+        <!-- Trophy or Skull -->
+      </div>
+      <div>
+        <h2 id="resultTitle" class="text-2xl md:text-3xl font-black text-white">Assessment Completed</h2>
+        <p id="resultSubtitle" class="text-sm text-slate-400 mt-1 max-w-md mx-auto">Review your verified results breakdown</p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl text-center">
+        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400 font-semibold mb-1">Final Score</div>
+          <div id="resFinalScore" class="text-2xl font-black text-amber-400 font-mono">0</div>
+        </div>
+        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400 font-semibold mb-1">Accuracy</div>
+          <div id="resAccuracy" class="text-2xl font-black text-emerald-400 font-mono">0%</div>
+        </div>
+        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400 font-semibold mb-1">Rank Title</div>
+          <div id="resFinalRank" class="text-sm font-black text-indigo-400">Novice</div>
+        </div>
+        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs text-slate-400 font-semibold mb-1">Best Streak</div>
+          <div id="resMaxStreak" class="text-2xl font-black text-orange-400 font-mono">0</div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3 justify-center mt-2">
+        <button onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-5 py-2.5 rounded-xl text-sm transition border border-slate-700">
+          <i class="fa-solid fa-house mr-1.5"></i> Mode Menu
+        </button>
+        <button onclick="startAssessmentWithCurrentMode()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold px-6 py-2.5 rounded-xl text-sm transition shadow-lg shadow-indigo-600/30 flex items-center gap-2">
+          <i class="fa-solid fa-rotate-right"></i> Try Again (Reshuffle)
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // COMPREHENSIVE CHAPTER 1 QUESTION & TASK DATABASE
+    const QUESTION_BANK = [
+      // --- TYPE A: STANDARD MCQ ---
+      {
+        id: "mcq_1",
+        modeCategory: "mcq",
+        typeTag: "MCQ",
+        lesson: "Lesson 1-1",
+        points: 10,
+        penalty: 5,
+        question: "Which 1940s computing milestone was built using glass electronic valves/vacuum tubes for switching and amplification?",
+        options: [
+          "ENIAC",
+          "Microchip 4004",
+          "Quantum Qubit-1",
+          "Analytical Diff Engine"
+        ],
+        answer: 0,
+        explanation: "ENIAC was the first general-purpose electronic computer built in the 1940s using thousands of vacuum tubes prior to silicon transistors."
+      },
+      {
+        id: "mcq_2",
+        modeCategory: "mcq",
+        typeTag: "MCQ",
+        lesson: "Lesson 1-1",
+        points: 10,
+        penalty: 5,
+        question: "What physical limit in nanoscale transistors causes excess heat and energy loss due to extreme physical miniaturization?",
+        options: [
+          "Clock Synchronization Delay",
+          "Leakage Current",
+          "Collaborative Drift",
+          "Backpropagation Loss"
+        ],
+        answer: 1,
+        explanation: "Leakage Current is the electrical current leaking across nanoscale insulating barriers in transistors, causing excess heat and power waste."
+      },
+      {
+        id: "mcq_3",
+        modeCategory: "mcq",
+        typeTag: "MCQ",
+        lesson: "Lesson 1-2",
+        points: 15,
+        penalty: 7,
+        question: "Which component of an Artificial Neuron serves as an additive constant to shift the activation threshold and control firing behavior?",
+        options: [
+          "Weight (W)",
+          "Bias (B)",
+          "Hidden Layer Index",
+          "Loss Function Gradient"
+        ],
+        answer: 1,
+        explanation: "Bias (B) is an additive constant that shifts the neuron's activation threshold, allowing activation even when all raw inputs are zero."
+      },
+      {
+        id: "mcq_4",
+        modeCategory: "mcq",
+        typeTag: "MCQ",
+        lesson: "Lesson 1-2",
+        points: 15,
+        penalty: 7,
+        question: "Why is an Activation Function essential inside an Artificial Neural Network?",
+        options: [
+          "It forces the network to calculate only linear formulas",
+          "It introduces non-linearity to learn complex boundaries without collapsing into a simple linear equation",
+          "It lowers the CPU temperature by throttling cores",
+          "It guarantees 100% absence of algorithmic bias"
+        ],
+        answer: 1,
+        explanation: "Activation functions introduce non-linearity, which is required for neural networks to recognize complex non-linear patterns like facial geometry."
+      },
+      {
+        id: "mcq_5",
+        modeCategory: "mcq",
+        typeTag: "MCQ",
+        lesson: "Lesson 1-3",
+        points: 15,
+        penalty: 7,
+        question: "A streaming platform calculates user taste similarity vectors across its entire community to recommend unviewed shows. What method is this?",
+        options: [
+          "Collaborative Filtering",
+          "Content-Based Filtering",
+          "Edge Latency Mapping",
+          "Quantum Verification"
+        ],
+        answer: 0,
+        explanation: "Collaborative Filtering calculates user similarity vectors across a wide community to cross-recommend items enjoyed by users with similar profiles."
+      },
+      {
+        id: "mcq_6",
+        modeCategory: "mcq",
+        typeTag: "MCQ",
+        lesson: "Lesson 1-3",
+        points: 15,
+        penalty: 8,
+        question: "In predictive maintenance, what crucial condition metric is calculated from machinery sensor time-series data to avert component failures?",
+        options: [
+          "Remaining Useful Life (RUL)",
+          "Zero-Shot Token Length",
+          "Proxy Variance Score",
+          "Sub-Core Thermal Delta"
+        ],
+        answer: 0,
+        explanation: "Predictive Maintenance monitors sensor time-series data to forecast failures by computing the Remaining Useful Life (RUL) of machine components."
+      },
+      {
+        id: "mcq_7",
+        modeCategory: "mcq",
+        typeTag: "MCQ",
+        lesson: "Lesson 1-4",
+        points: 15,
+        penalty: 8,
+        question: "What is a 'Proxy Variable' in algorithmic bias?",
+        options: [
+          "A mathematical tool like LIME or SHAP used for model explainability",
+          "A seemingly harmless feature (like zip code) that indirectly correlates with a protected attribute (like race or income)",
+          "A variable that speeds up inference on Edge devices",
+          "A duplicate node inside the Hidden Layer"
+        ],
+        answer: 1,
+        explanation: "Proxy Variables indirectly correlate with protected demographics (e.g. zip code standing in for race/income), quietly transmitting bias into AI decisions."
+      },
+
+      // --- TYPE B: CONNECTION & MATCHING PAIRS (Match Card) ---
+      {
+        id: "match_1",
+        modeCategory: "matching",
+        typeTag: "Matching Challenge",
+        lesson: "Lesson 1-1",
+        points: 20,
+        penalty: 8,
+        question: "Pair each Lesson 1-1 concept on the left with its accurate definition on the right (Select a term, then select its matching definition):",
+        pairs: [
+          { term: "Moore's Law", def: "Number of transistors on a microchip doubles approximately every two years." },
+          { term: "Quantum Tunneling", def: "Electrons pass through thin insulating barriers, disrupting binary 0/1 signals." },
+          { term: "Edge Computing", def: "Processing data locally on-board to minimize latency for real-time braking." }
+        ],
+        explanation: "Moore's law tracks transistor doubling; Quantum Tunneling disrupts binary states at atomic scales; Edge Computing eliminates network latency."
+      },
+      {
+        id: "match_2",
+        modeCategory: "matching",
+        typeTag: "Matching Challenge",
+        lesson: "Lesson 1-3",
+        points: 20,
+        penalty: 8,
+        question: "Pair each Recommendation & Industry concept with its core operational definition:",
+        pairs: [
+          { term: "Content-Based Filtering", def: "Recommends items with similar attributes and metadata to past user likes." },
+          { term: "Cosine Similarity", def: "Measures vector angle: 1 is near-identical taste, 0 is unrelated." },
+          { term: "Cold Start Problem", def: "Difficulty recommending when a new user or item has zero historical logs." }
+        ],
+        explanation: "Content-based inspects item properties; Cosine measures feature vector angles; Cold Start affects brand-new entries with zero historical data."
+      },
+      {
+        id: "match_3",
+        modeCategory: "matching",
+        typeTag: "Matching Challenge",
+        lesson: "Lesson 1-4",
+        points: 20,
+        penalty: 8,
+        question: "Pair each Ethical AI concept with its authoritative definition:",
+        pairs: [
+          { term: "Explainable AI (XAI)", def: "Frameworks (like LIME/SHAP) that make Black-Box decisions transparent." },
+          { term: "Responsibility", def: "Technical and operational duty of engineers to write and operate code correctly." },
+          { term: "Accountability", def: "Ultimate legal and social liability for outcomes, damages, and societal impacts." }
+        ],
+        explanation: "XAI clarifies Black-Box rationale; Engineers hold technical responsibility, while institutions hold ultimate legal accountability."
+      },
+
+      // --- TYPE C: HIERARCHY & SEQUENCE ORDERING ---
+      {
+        id: "order_1",
+        modeCategory: "ordering",
+        typeTag: "Hierarchy Sorter",
+        lesson: "Lesson 1-2",
+        points: 25,
+        penalty: 10,
+        question: "Arrange the AI Nested Hierarchy from the broadest discipline (Top / 1) down to the most specialized subset (Bottom / 4):",
+        correctSequence: [
+          "Artificial Intelligence (AI)",
+          "Machine Learning (ML)",
+          "Deep Learning (DL)",
+          "Generative AI (GenAI)"
+        ],
+        explanation: "The nested taxonomy is: Artificial Intelligence (AI) > Machine Learning (ML) > Deep Learning (DL) > Generative AI (GenAI)."
+      },
+      {
+        id: "order_2",
+        modeCategory: "ordering",
+        typeTag: "Layer Flow Sorter",
+        lesson: "Lesson 1-2",
+        points: 20,
+        penalty: 8,
+        question: "Sequence the data transformation flow through Artificial Neural Network (ANN) layers from beginning to end:",
+        correctSequence: [
+          "Input Layer: Receives raw data features",
+          "Hidden Layer: Feature extraction and mathematical non-linear transforms",
+          "Output Layer: Delivers final prediction or classification decision"
+        ],
+        explanation: "Data enters through the Input layer, undergoes feature extraction in the Hidden layer(s), and arrives at the Output layer for classification."
+      },
+      {
+        id: "order_3",
+        modeCategory: "ordering",
+        typeTag: "Principles Sorter",
+        lesson: "Lesson 1-4",
+        points: 20,
+        penalty: 8,
+        question: "Arrange the Four Ethical Principles in the formal order presented in Lesson 1-4:",
+        correctSequence: [
+          "Fairness: Avoiding unjust discrimination",
+          "Transparency: Clear disclosure on operations",
+          "Privacy Protection: Securing data and respecting user consent",
+          "Accountability: Determining legal liability"
+        ],
+        explanation: "The four pillars are: Fairness, Transparency, Privacy Protection, and Accountability."
+      },
+
+      // --- TYPE D: SCENARIO & TRUE / FALSE ANALYSIS ---
+      {
+        id: "tf_1",
+        modeCategory: "mcq",
+        typeTag: "Analytical Verification",
+        lesson: "Lesson 1-1",
+        points: 10,
+        penalty: 5,
+        question: "True or False: Quantum Computing is designed to be a direct, everyday replacement for personal laptops and general-purpose PCs.",
+        options: [
+          "True",
+          "False"
+        ],
+        answer: 1,
+        explanation: "False. Quantum Computing is specialized for complex mathematical simulations and cryptography, not a general-purpose replacement for everyday PCs."
+      },
+      {
+        id: "tf_2",
+        modeCategory: "mcq",
+        typeTag: "Analytical Verification",
+        lesson: "Lesson 1-4",
+        points: 15,
+        penalty: 7,
+        question: "True or False: AI Hallucination occurs because generative models are malicious and intentionally fabricate false stories.",
+        options: [
+          "True",
+          "False"
+        ],
+        answer: 1,
+        explanation: "False. Hallucination occurs because Generative models operate on statistical next-token prediction, which requires human Critical Verification against primary sources."
+      }
+    ];
+
+    // Levels Configuration
+    const LEVEL_THRESHOLDS = [
+      { lvl: 1, name: "Novice Explorer", minXp: 0, maxXp: 60 },
+      { lvl: 2, name: "Apprentice Analyst", minXp: 60, maxXp: 140 },
+      { lvl: 3, name: "Certified Engineer", minXp: 140, maxXp: 240 },
+      { lvl: 4, name: "Senior Architect", minXp: 240, maxXp: 360 },
+      { lvl: 5, name: "AI Grandmaster", minXp: 360, maxXp: 9999 }
+    ];
+
+    // State Variables
+    let selectedMode = 'mixed';
+    let activeQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let streak = 0;
+    let maxStreak = 0;
+    let lives = 3;
+    let correctCount = 0;
+    let isAnswerLocked = false;
+
+    // Matching State
+    let selectedMatchTerm = null;
+    let selectedMatchDef = null;
+    let activePairMatchesRemaining = 0;
+
+    // Sequence Order State
+    let currentSequenceList = [];
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function chooseMode(mode) {
+      selectedMode = mode;
+      startAssessmentWithCurrentMode();
+    }
+
+    function returnToMenu() {
+      document.getElementById('resultScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.add('hidden');
+      document.getElementById('startScreen').classList.remove('hidden');
+      document.getElementById('startScreen').classList.add('flex');
+    }
+
+    function startAssessmentWithCurrentMode() {
+      let filtered = [];
+      if (selectedMode === 'mixed') {
+        filtered = QUESTION_BANK;
+      } else {
+        filtered = QUESTION_BANK.filter(q => q.modeCategory === selectedMode);
+      }
+
+      // Deep shuffle questions and their internal options
+      activeQuestions = shuffleArray(filtered).map(item => {
+        if (item.options) {
+          const originalAns = item.options[item.answer];
+          const shuffledOpts = shuffleArray(item.options);
+          return {
+            ...item,
+            options: shuffledOpts,
+            answer: shuffledOpts.indexOf(originalAns)
+          };
+        }
+        return { ...item };
+      });
+
+      currentIndex = 0;
+      score = 0;
+      streak = 0;
+      maxStreak = 0;
+      lives = 3;
+      correctCount = 0;
+      isAnswerLocked = false;
+
+      updateHUD();
+
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('resultScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.remove('hidden');
+      document.getElementById('quizScreen').classList.add('flex');
+
+      renderCurrentCard();
+    }
+
+    function updateHUD() {
+      document.getElementById('scoreBadge').innerText = score;
+      document.getElementById('streakBadge').innerText = streak;
+
+      // Hearts / Lives
+      const livesContainer = document.getElementById('livesContainer');
+      livesContainer.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        if (i < lives) {
+          livesContainer.innerHTML += '<i class="fa-solid fa-heart text-rose-500"></i>';
+        } else {
+          livesContainer.innerHTML += '<i class="fa-regular fa-heart text-slate-600"></i>';
+        }
+      }
+
+      // Level Progression
+      const currentLevelObj = LEVEL_THRESHOLDS.slice().reverse().find(t => score >= t.minXp) || LEVEL_THRESHOLDS[0];
+      document.getElementById('levelBadge').innerText = `Lvl ${currentLevelObj.lvl} • ${currentLevelObj.name}`;
+
+      let progressPct = 100;
+      if (currentLevelObj.lvl < 5) {
+        const span = currentLevelObj.maxXp - currentLevelObj.minXp;
+        const currentInLevel = Math.max(0, score - currentLevelObj.minXp);
+        progressPct = Math.min(100, Math.round((currentInLevel / span) * 100));
+      }
+      document.getElementById('levelProgress').style.width = `${progressPct}%`;
+    }
+
+    function renderCurrentCard() {
+      isAnswerLocked = false;
+      const q = activeQuestions[currentIndex];
+
+      document.getElementById('currentQuestionNum').innerText = currentIndex + 1;
+      document.getElementById('totalQuestionsNum').innerText = activeQuestions.length;
+      document.getElementById('questionCategoryBadge').innerText = q.lesson;
+      document.getElementById('qTypeBadge').innerText = q.typeTag;
+      document.getElementById('questionValueBadge').innerText = `+${q.points} XP (Mistake: -${q.penalty})`;
+      document.getElementById('questionText').innerText = q.question;
+
+      const dynamicBody = document.getElementById('dynamicBody');
+      dynamicBody.innerHTML = '';
+
+      // Reset Feedback Banner
+      const fb = document.getElementById('feedbackBanner');
+      fb.classList.add('hidden');
+      fb.className = 'hidden mt-2 p-4 rounded-xl text-xs md:text-sm leading-relaxed border transition-all';
+
+      // Dispatch by question format
+      if (q.options) {
+        renderMCQBody(q, dynamicBody);
+      } else if (q.pairs) {
+        renderMatchingBody(q, dynamicBody);
+      } else if (q.correctSequence) {
+        renderOrderingBody(q, dynamicBody);
+      }
+    }
+
+    /* -------------------------------------------
+       FORMAT 1: MCQ RENDER & HANDLER
+    -------------------------------------------- */
+    function renderMCQBody(q, container) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex flex-col gap-2.5';
+      const letters = ['A', 'B', 'C', 'D'];
+
+      q.options.forEach((optText, idx) => {
+        const btn = document.createElement('button');
+        btn.id = `opt-btn-${idx}`;
+        btn.className = 'w-full text-left p-3.5 rounded-xl border border-slate-700/80 bg-slate-900/80 hover:bg-slate-800 hover:border-indigo-500 transition duration-150 flex items-center gap-3 text-sm font-medium group';
+        btn.innerHTML = `
+          <span class="w-7 h-7 rounded-lg bg-slate-800 text-slate-300 font-mono text-xs font-bold flex items-center justify-center border border-slate-700 group-hover:border-indigo-500 group-hover:text-indigo-400">${letters[idx] || (idx+1)}</span>
+          <span class="flex-1">${optText}</span>
+        `;
+        btn.onclick = () => handleMCQAnswer(idx);
+        wrapper.appendChild(btn);
+      });
+      container.appendChild(wrapper);
+    }
+
+    function handleMCQAnswer(selectedIdx) {
+      if (isAnswerLocked) return;
+      isAnswerLocked = true;
+
+      const q = activeQuestions[currentIndex];
+      const isCorrect = (selectedIdx === q.answer);
+      const selBtn = document.getElementById(`opt-btn-${selectedIdx}`);
+      const correctBtn = document.getElementById(`opt-btn-${q.answer}`);
+
+      for (let i = 0; i < q.options.length; i++) {
+        const b = document.getElementById(`opt-btn-${i}`);
+        b.disabled = true;
+        b.classList.remove('hover:bg-slate-800', 'hover:border-indigo-500');
+      }
+
+      if (isCorrect) {
+        selBtn.classList.add('bg-emerald-950/40', 'border-emerald-500', 'text-emerald-200');
+        awardSuccess(q.points, q.explanation);
+      } else {
+        selBtn.classList.add('bg-rose-950/40', 'border-rose-500', 'text-rose-200', 'shake');
+        correctBtn.classList.add('bg-emerald-950/30', 'border-emerald-500', 'text-emerald-200');
+        applyPenalty(q.penalty, q.explanation);
+      }
+    }
+
+    /* -------------------------------------------
+       FORMAT 2: MATCHING PAIRS RENDER & HANDLER
+    -------------------------------------------- */
+    function renderMatchingBody(q, container) {
+      selectedMatchTerm = null;
+      selectedMatchDef = null;
+      activePairMatchesRemaining = q.pairs.length;
+
+      const grid = document.createElement('div');
+      grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+
+      const termsCol = document.createElement('div');
+      termsCol.className = 'flex flex-col gap-2';
+      termsCol.innerHTML = '<span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Key Terms</span>';
+
+      const defsCol = document.createElement('div');
+      defsCol.className = 'flex flex-col gap-2';
+      defsCol.innerHTML = '<span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Definitions</span>';
+
+      // Shuffled terms and defs independently
+      const shuffledTerms = shuffleArray(q.pairs.map((p, i) => ({ text: p.term, originalIdx: i })));
+      const shuffledDefs = shuffleArray(q.pairs.map((p, i) => ({ text: p.def, originalIdx: i })));
+
+      shuffledTerms.forEach(item => {
+        const btn = document.createElement('button');
+        btn.id = `m-term-${item.originalIdx}`;
+        btn.className = 'w-full text-left p-3 rounded-xl border border-slate-700 bg-slate-900/90 text-sm font-bold hover:border-indigo-500 transition';
+        btn.innerText = item.text;
+        btn.onclick = () => selectMatchingTerm(btn, item.originalIdx);
+        termsCol.appendChild(btn);
+      });
+
+      shuffledDefs.forEach(item => {
+        const btn = document.createElement('button');
+        btn.id = `m-def-${item.originalIdx}`;
+        btn.className = 'w-full text-left p-3 rounded-xl border border-slate-700 bg-slate-900/70 text-xs text-slate-300 hover:border-indigo-500 transition leading-snug';
+        btn.innerText = item.text;
+        btn.onclick = () => selectMatchingDef(btn, item.originalIdx);
+        defsCol.appendChild(btn);
+      });
+
+      grid.appendChild(termsCol);
+      grid.appendChild(defsCol);
+      container.appendChild(grid);
+    }
+
+    function selectMatchingTerm(btn, idx) {
+      if (isAnswerLocked || btn.disabled) return;
+      if (selectedMatchTerm) {
+        selectedMatchTerm.btn.classList.remove('ring-2', 'ring-indigo-400', 'bg-indigo-950/40');
+      }
+      selectedMatchTerm = { btn, idx };
+      btn.classList.add('ring-2', 'ring-indigo-400', 'bg-indigo-950/40');
+      checkMatchingEvaluation();
+    }
+
+    function selectMatchingDef(btn, idx) {
+      if (isAnswerLocked || btn.disabled) return;
+      if (selectedMatchDef) {
+        selectedMatchDef.btn.classList.remove('ring-2', 'ring-indigo-400', 'bg-indigo-950/40');
+      }
+      selectedMatchDef = { btn, idx };
+      btn.classList.add('ring-2', 'ring-indigo-400', 'bg-indigo-950/40');
+      checkMatchingEvaluation();
+    }
+
+    function checkMatchingEvaluation() {
+      if (!selectedMatchTerm || !selectedMatchDef) return;
+
+      const q = activeQuestions[currentIndex];
+      const isPairCorrect = (selectedMatchTerm.idx === selectedMatchDef.idx);
+
+      if (isPairCorrect) {
+        selectedMatchTerm.btn.classList.add('bg-emerald-950/50', 'border-emerald-500', 'text-emerald-200');
+        selectedMatchDef.btn.classList.add('bg-emerald-950/50', 'border-emerald-500', 'text-emerald-200');
+        selectedMatchTerm.btn.disabled = true;
+        selectedMatchDef.btn.disabled = true;
+
+        selectedMatchTerm = null;
+        selectedMatchDef = null;
+        activePairMatchesRemaining--;
+
+        // If all pairs matched
+        if (activePairMatchesRemaining === 0) {
+          isAnswerLocked = true;
+          awardSuccess(q.points, q.explanation);
+        }
+      } else {
+        // Strict penalty on mismatch
+        isAnswerLocked = true;
+        selectedMatchTerm.btn.classList.add('shake', 'border-rose-500', 'bg-rose-950/40');
+        selectedMatchDef.btn.classList.add('shake', 'border-rose-500', 'bg-rose-950/40');
+
+        // Reveal matches
+        q.pairs.forEach((_, idx) => {
+          const tb = document.getElementById(`m-term-${idx}`);
+          const db = document.getElementById(`m-def-${idx}`);
+          if (tb) tb.disabled = true;
+          if (db) db.disabled = true;
+        });
+
+        applyPenalty(q.penalty, q.explanation);
+      }
+    }
+
+    /* -------------------------------------------
+       FORMAT 3: HIERARCHY & SEQUENCE ORDERING
+    -------------------------------------------- */
+    function renderOrderingBody(q, container) {
+      currentSequenceList = shuffleArray(q.correctSequence);
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex flex-col gap-2.5';
+      wrapper.id = 'sequenceSlotsContainer';
+
+      const renderSlots = () => {
+        wrapper.innerHTML = '';
+        currentSequenceList.forEach((text, i) => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between p-3 rounded-xl border border-slate-700 bg-slate-900/90 text-slate-200';
+          row.innerHTML = `
+            <div class="flex items-center gap-3">
+              <span class="w-6 h-6 rounded-full bg-slate-800 text-indigo-300 border border-slate-700 flex items-center justify-center text-xs font-mono font-bold">${i + 1}</span>
+              <span class="text-xs md:text-sm font-semibold">${text}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <button onclick="moveSequenceItem(${i}, -1)" ${i === 0 || isAnswerLocked ? 'disabled class="opacity-20 text-slate-500 p-1"' : 'class="hover:bg-slate-800 text-slate-300 p-1.5 rounded transition"'}><i class="fa-solid fa-arrow-up"></i></button>
+              <button onclick="moveSequenceItem(${i}, 1)" ${i === currentSequenceList.length - 1 || isAnswerLocked ? 'disabled class="opacity-20 text-slate-500 p-1"' : 'class="hover:bg-slate-800 text-slate-300 p-1.5 rounded transition"'}><i class="fa-solid fa-arrow-down"></i></button>
+            </div>
+          `;
+          wrapper.appendChild(row);
+        });
+      };
+
+      window.moveSequenceItem = (idx, step) => {
+        if (isAnswerLocked) return;
+        const target = idx + step;
+        if (target < 0 || target >= currentSequenceList.length) return;
+        const tmp = currentSequenceList[idx];
+        currentSequenceList[idx] = currentSequenceList[target];
+        currentSequenceList[target] = tmp;
+        renderSlots();
+      };
+
+      renderSlots();
+      container.appendChild(wrapper);
+
+      // Lock & Submit Order Button
+      const submitBtn = document.createElement('button');
+      submitBtn.id = 'orderSubmitBtn';
+      submitBtn.className = 'mt-3 w-full py-2.5 bg-indigo-600/80 hover:bg-indigo-600 text-white font-bold rounded-xl text-xs transition border border-indigo-500/30 flex items-center justify-center gap-2';
+      submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Submit Sequence Order';
+      submitBtn.onclick = () => evaluateSequenceOrder();
+      container.appendChild(submitBtn);
+    }
+
+    function evaluateSequenceOrder() {
+      if (isAnswerLocked) return;
+      isAnswerLocked = true;
+
+      const q = activeQuestions[currentIndex];
+      const isCorrect = q.correctSequence.every((val, i) => val === currentSequenceList[i]);
+      document.getElementById('orderSubmitBtn').disabled = true;
+      document.getElementById('orderSubmitBtn').classList.add('opacity-40');
+
+      if (isCorrect) {
+        awardSuccess(q.points, q.explanation);
+      } else {
+        applyPenalty(q.penalty, `Correct Sequence: [ ${q.correctSequence.join("  ➔  ")} ]. Note: ${q.explanation}`);
+      }
+    }
+
+    /* -------------------------------------------
+       COMMON REWARD & PENALTY ENGINE
+    -------------------------------------------- */
+    function awardSuccess(pts, explanation) {
+      correctCount++;
+      streak++;
+      if (streak > maxStreak) maxStreak = streak;
+
+      const streakBonus = Math.min(10, (streak - 1) * 2);
+      const earned = pts + streakBonus;
+      score += earned;
+
+      const fb = document.getElementById('feedbackBanner');
+      fb.className = 'mt-3 p-4 rounded-xl text-xs md:text-sm border border-emerald-500/40 bg-emerald-950/30 text-emerald-300 pop-in block';
+      document.getElementById('feedbackTitle').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> Correct! +${earned} XP earned ${streak > 1 ? `(${streak}x Streak!)` : ''}`;
+      document.getElementById('feedbackExplanation').innerText = explanation;
+
+      confetti({ particleCount: 35, spread: 55, origin: { y: 0.8 } });
+      updateHUD();
+      checkEndCondition();
+    }
+
+    function applyPenalty(penaltyPts, explanation) {
+      score = Math.max(0, score - penaltyPts);
+      streak = 0;
+      lives--;
+
+      const fb = document.getElementById('feedbackBanner');
+      fb.className = 'mt-3 p-4 rounded-xl text-xs md:text-sm border border-rose-500/40 bg-rose-950/30 text-rose-300 pop-in block';
+      document.getElementById('feedbackTitle').innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i> Mistake Penalized: -${penaltyPts} XP & 1 Life Lost`;
+      document.getElementById('feedbackExplanation').innerText = explanation;
+
+      updateHUD();
+      checkEndCondition();
+    }
+
+    function checkEndCondition() {
+      const nextBtn = document.getElementById('nextBtn');
+      if (lives <= 0) {
+        nextBtn.innerHTML = `<span>View Final Result</span> <i class="fa-solid fa-skull"></i>`;
+      } else if (currentIndex === activeQuestions.length - 1) {
+        nextBtn.innerHTML = `<span>Finish Test</span> <i class="fa-solid fa-flag-checkered"></i>`;
+      } else {
+        nextBtn.innerHTML = `<span>Next Challenge</span> <i class="fa-solid fa-arrow-right"></i>`;
+      }
+    }
+
+    function nextQuestion() {
+      if (lives <= 0 || currentIndex >= activeQuestions.length - 1) {
+        finishAssessment();
+        return;
+      }
+      currentIndex++;
+      renderCurrentCard();
+    }
+
+    function finishAssessment() {
+      document.getElementById('quizScreen').classList.remove('flex');
+      document.getElementById('quizScreen').classList.add('hidden');
+
+      const resultScreen = document.getElementById('resultScreen');
+      resultScreen.classList.remove('hidden');
+      resultScreen.classList.add('flex');
+
+      const iconBox = document.getElementById('resultIconBox');
+      const title = document.getElementById('resultTitle');
+      const sub = document.getElementById('resultSubtitle');
+
+      const answeredTotal = currentIndex + 1;
+      const accuracy = answeredTotal > 0 ? Math.round((correctCount / answeredTotal) * 100) : 0;
+      const currentLevelObj = LEVEL_THRESHOLDS.slice().reverse().find(t => score >= t.minXp) || LEVEL_THRESHOLDS[0];
+
+      if (lives <= 0) {
+        iconBox.className = 'w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shadow-xl bg-rose-500/20 text-rose-400 border border-rose-500/30';
+        iconBox.innerHTML = '<i class="fa-solid fa-heart-crack"></i>';
+        title.innerText = "Lives Depleted (Eliminated)";
+        sub.innerText = "You made 3 mistakes and lost all lives. Thoroughly review Chapter 1 terminology and retry!";
+      } else if (accuracy >= 80) {
+        iconBox.className = 'w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shadow-xl bg-amber-500/20 text-amber-400 border border-amber-500/30';
+        iconBox.innerHTML = '<i class="fa-solid fa-trophy"></i>';
+        title.innerText = "Certified Mastery!";
+        sub.innerText = "Outstanding analytical accuracy across Chapter 1 terminologies and technical foundations!";
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+      } else {
+        iconBox.className = 'w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shadow-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30';
+        iconBox.innerHTML = '<i class="fa-solid fa-award"></i>';
+        title.innerText = "Assessment Complete";
+        sub.innerText = "Good progress! Study the penalized questions to boost your final score.";
+      }
+
+      document.getElementById('resFinalScore').innerText = score;
+      document.getElementById('resAccuracy').innerText = `${accuracy}%`;
+      document.getElementById('resFinalRank').innerText = `Lvl ${currentLevelObj.lvl}`;
+      document.getElementById('resMaxStreak').innerText = maxStreak;
+    }
+  </script>
+</body>
+</html>
