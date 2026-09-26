@@ -1,0 +1,15 @@
+# Scratch and developer compilation scripts
+verify_dom.js
+build_secure_db.js
+make_app.js
+secure_questions.json
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE & Editor caches
+.idea/
+.vscode/
+*.log

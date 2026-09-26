@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 1: Multi-Mode Mastery & Exam Arena | بكالوريا الذكاء الاصطناعي</title>
+  <meta name="description" content="Secure, Gamified Assessment Arena for Chapter 1: AI Foundations, Hardware Evolution, Neural Networks, Recommender Systems, and AI Ethics.">
+  
+  <!-- Tailwind CSS & FontAwesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Confetti Effects -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Custom High-End Styling -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="selection:bg-indigo-600 selection:text-white flex flex-col min-h-screen">
+
+  <!-- Anti-Cheat Warning Toast Notification -->
+  <div id="antiCheatToast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 rounded-2xl glass-panel border-amber-500/40 text-amber-300 text-xs md:text-sm font-bold flex items-center gap-3 shadow-2xl shadow-black/80 pointer-events-none">
+    <i class="fa-solid fa-shield-halved text-amber-400 text-base"></i>
+    <span id="antiCheatToastMsg">Integrity protection active.</span>
+  </div>
+
+  <!-- Real-Time Top HUD Bar -->
+  <header class="glass-hud sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand & Badges -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
+          <i class="fa-solid fa-gamepad text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base md:text-lg font-black bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
+              Chapter 1 Arena
+            </h1>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+              <i class="fa-solid fa-shield-check text-[9px]"></i>
+              <span data-i18n-en="Protected" data-i18n-ar="محمي">Protected</span>
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 font-medium" data-i18n-en="Strict AI Evaluation & Non-Repeating Engine" data-i18n-ar="منصة تقييم الذكاء الاصطناعي بنظام منع التكرار والتشفير">
+            Strict AI Evaluation & Non-Repeating Engine
+          </p>
+        </div>
+      </div>
+
+      <!-- Controls: Audio & Language Switcher -->
+      <div class="flex items-center gap-2">
+        <button id="soundToggleBtn" onclick="toggleSoundUI()" class="p-2 rounded-xl bg-slate-800/80 border border-slate-700/80 hover:bg-slate-700 text-slate-300 text-sm transition" title="Sound Effects">
+          <i class="fa-solid fa-volume-high text-indigo-400"></i>
+        </button>
+        <button id="langToggleBtn" onclick="toggleLanguage()" class="px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/80 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-globe text-indigo-400"></i>
+          <span>العربية</span>
+        </button>
+      </div>
+
+      <!-- Player Live Gamification Counters -->
+      <div class="flex items-center gap-2 md:gap-3.5 bg-slate-900/90 px-3.5 py-1.5 rounded-2xl border border-slate-800 shadow-inner">
+        <!-- Hearts / Lives -->
+        <div id="livesContainer" class="flex items-center gap-1 text-rose-500 text-sm font-bold pl-0.5">
+          <i class="fa-solid fa-heart"></i>
+          <i class="fa-solid fa-heart"></i>
+          <i class="fa-solid fa-heart"></i>
+        </div>
+
+        <div class="h-4 w-px bg-slate-800"></div>
+
+        <!-- Level Indicator -->
+        <div class="flex items-center gap-1.5 text-indigo-300 text-xs md:text-sm font-bold">
+          <i class="fa-solid fa-shield-halved text-indigo-400"></i>
+          <span id="levelBadge">Lvl 1</span>
+        </div>
+
+        <div class="h-4 w-px bg-slate-800"></div>
+
+        <!-- Score Counter -->
+        <div class="flex items-center gap-1.5 text-amber-400 text-xs md:text-sm font-bold">
+          <i class="fa-solid fa-coins text-amber-400"></i>
+          <span id="scoreBadge" class="font-mono">0</span>
+          <span class="text-[10px] text-slate-400 font-normal">XP</span>
+        </div>
+
+        <div class="h-4 w-px bg-slate-800"></div>
+
+        <!-- Streak Counter -->
+        <div class="flex items-center gap-1.5 text-orange-400 text-xs md:text-sm font-bold pr-0.5">
+          <i class="fa-solid fa-fire text-orange-400 animate-pulse"></i>
+          <span id="streakBadge" class="font-mono">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- XP Level Progression Bar -->
+    <div class="w-full bg-slate-900 h-1">
+      <div id="levelProgress" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-1 transition-all duration-300" style="width: 0%"></div>
+    </div>
+  </header>
+
+  <!-- Main Body Container -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+    <!-- 1. INITIAL MODE SELECTION SCREEN -->
+    <div id="startScreen" class="glass-panel rounded-3xl p-6 md:p-9 flex flex-col gap-6 pop-in">
+      <div class="text-center max-w-xl mx-auto">
+        <span class="text-[11px] font-extrabold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20" data-i18n-en="High-Security Assessment Protocol" data-i18n-ar="بروتوكول التقييم الذكي المشفر">
+          High-Security Assessment Protocol
+        </span>
+        <h2 class="text-2xl md:text-3xl font-black text-white mt-2.5" data-i18n-en="Select Your Assessment Mode" data-i18n-ar="اختر نمط التقييم والتحدي">
+          Select Your Assessment Mode
+        </h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1.5 leading-relaxed" data-i18n-en="Strict anti-cheat enabled. Answers are hashed with SHA-256 salts. Questions and choices are uniquely randomized without duplication." data-i18n-ar="نظام حماية متقدم: الإجابات مشفرة بتقنية SHA-256، الأسئلة والخيارات تتغير عشوائياً بدون تكرار لتأكيد الفهم الحقيقي.">
+          Strict anti-cheat enabled. Answers are hashed with SHA-256 salts. Questions and choices are uniquely randomized without duplication.
+        </p>
+      </div>
+
+      <!-- Mode Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <!-- Mode 1: Mixed Gauntlet -->
+        <button onclick="chooseMode('mixed')" class="btn-mode-card p-4 rounded-2xl border border-indigo-500/30 bg-indigo-950/20 hover:bg-indigo-900/30 text-left transition flex flex-col justify-between group">
+          <div class="flex items-start justify-between w-full">
+            <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-lg mb-2 border border-indigo-500/30 group-hover:scale-110 transition">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-500/30" data-i18n-en="Recommended" data-i18n-ar="النمط الموصى به">
+              Recommended
+            </span>
+          </div>
+          <div>
+            <h4 class="font-black text-white text-base" data-i18n-en="Mixed Gauntlet (All Question Types)" data-i18n-ar="التحدي الشامل (جميع أنواع الأسئلة)">
+              Mixed Gauntlet (All Question Types)
+            </h4>
+            <p class="text-xs text-slate-400 mt-1" data-i18n-en="Cycles dynamically through MCQs, Matching pairs, Sequence puzzles, and Scenario checks." data-i18n-ar="يجمع بين أسئلة الاختيار، التوصيل، الترتيب التسلسلي، وأسئلة التحقق من المفاهيم.">
+              Cycles dynamically through MCQs, Matching pairs, Sequence puzzles, and Scenario checks.
+            </p>
+          </div>
+        </button>
+
+        <!-- Mode 2: Standard MCQ -->
+        <button onclick="chooseMode('mcq')" class="btn-mode-card p-4 rounded-2xl border border-slate-700/80 bg-slate-900/60 hover:bg-slate-800 text-left transition flex flex-col justify-between group">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-lg mb-2 border border-blue-500/30 group-hover:scale-110 transition">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+          <div>
+            <h4 class="font-black text-white text-base" data-i18n-en="Concept MCQ & Definitions" data-i18n-ar="بنك الاختيار من متعدد والمفاهيم">
+              Concept MCQ & Definitions
+            </h4>
+            <p class="text-xs text-slate-400 mt-1" data-i18n-en="Single-attempt questions evaluating Moore's law, neural networks, ethics, and filtering." data-i18n-ar="أسئلة اختيار من متعدد بمحاولة واحدة تغطي قانون مور، الشبكات العصبية، والأخلاقيات.">
+              Single-attempt questions evaluating Moore's law, neural networks, ethics, and filtering.
+            </p>
+          </div>
+        </button>
+
+        <!-- Mode 3: Matching Cards -->
+        <button onclick="chooseMode('matching')" class="btn-mode-card p-4 rounded-2xl border border-slate-700/80 bg-slate-900/60 hover:bg-slate-800 text-left transition flex flex-col justify-between group">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg mb-2 border border-emerald-500/30 group-hover:scale-110 transition">
+            <i class="fa-solid fa-link"></i>
+          </div>
+          <div>
+            <h4 class="font-black text-white text-base" data-i18n-en="Match & Connect Challenges" data-i18n-ar="تحديات التوصيل والربط الدقيق">
+              Match & Connect Challenges
+            </h4>
+            <p class="text-xs text-slate-400 mt-1" data-i18n-en="Pair technical terms to their exact syllabus definitions. Mismatches incur strict penalties." data-i18n-ar="صل المصطلحات العلمية بتعريفاتها الدقيقة من كتاب المنهج مع تجنب أخطاء الربط.">
+              Pair technical terms to their exact syllabus definitions. Mismatches incur strict penalties.
+            </p>
+          </div>
+        </button>
+
+        <!-- Mode 4: Ordering -->
+        <button onclick="chooseMode('ordering')" class="btn-mode-card p-4 rounded-2xl border border-slate-700/80 bg-slate-900/60 hover:bg-slate-800 text-left transition flex flex-col justify-between group">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg mb-2 border border-amber-500/30 group-hover:scale-110 transition">
+            <i class="fa-solid fa-arrow-down-short-wide"></i>
+          </div>
+          <div>
+            <h4 class="font-black text-white text-base" data-i18n-en="Hierarchy & Flow Sorter" data-i18n-ar="ترتيب الهرمية ومسارات التدفق">
+              Hierarchy & Flow Sorter
+            </h4>
+            <p class="text-xs text-slate-400 mt-1" data-i18n-en="Sort scrambled AI disciplines, neural network layers, and ethical principles into logical order." data-i18n-ar="رتب المجالات الهرمية للذكاء الاصطناعي وطبقات الشبكة العصبية والمبادئ الأخلاقية.">
+              Sort scrambled AI disciplines, neural network layers, and ethical principles into logical order.
+            </p>
+          </div>
+        </button>
+
+        <!-- Mode 5: Speedrun Challenge -->
+        <button onclick="chooseMode('speedrun')" class="btn-mode-card md:col-span-2 p-4 rounded-2xl border border-rose-500/30 bg-rose-950/20 hover:bg-rose-900/30 text-left transition flex items-center justify-between group">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-lg border border-rose-500/30 group-hover:scale-110 transition shrink-0">
+              <i class="fa-solid fa-stopwatch-20"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="font-black text-white text-base" data-i18n-en="Speedrun Arena (45s Countdown)" data-i18n-ar="تحدي السرعة الخارق (45 ثانية لكل سؤال)">
+                  Speedrun Arena (45s Countdown)
+                </h4>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30" data-i18n-en="High Stakes" data-i18n-ar="تحدي حاسم">
+                  High Stakes
+                </span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5" data-i18n-en="Strict 45-second timer per question. If time runs out, a life is lost and score penalized." data-i18n-ar="مؤقت زمني حاسم: 45 ثانية لكل سؤال، نفاد الوقت يخصم النقاط ويحرق محاولة كاملة!">
+                Strict 45-second timer per question. If time runs out, a life is lost and score penalized.
+              </p>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-rose-400 transition transform group-hover:translate-x-1"></i>
+        </button>
+      </div>
+
+      <!-- Security & Anti-Cheating Guarantee Box -->
+      <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800/90 flex items-center gap-3.5 text-xs text-slate-400">
+        <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+          <i class="fa-solid fa-shield-virus text-sm"></i>
+        </div>
+        <span data-i18n-en="Anti-Tamper Active: Answers are cryptographically salted (SHA-256) with no plaintext storage. Tab-switching is logged, and inspect shortcuts are blocked." data-i18n-ar="أمان وحماية تامة: الإجابات مشفرة بخوارزمية SHA-256 ولا توجد كنص مكشوف، التحويل بين النوافذ مسجل، واختصارات التفتيش محظورة.">
+          Anti-Tamper Active: Answers are cryptographically salted (SHA-256) with no plaintext storage. Tab-switching is logged, and inspect shortcuts are blocked.
+        </span>
+      </div>
+    </div>
+
+    <!-- 2. ACTIVE QUIZ ARENA (DYNAMIC) -->
+    <div id="quizScreen" class="hidden flex-col gap-4">
+      <!-- Breadcrumb & Question Counter -->
+      <div class="flex items-center justify-between text-xs font-bold text-slate-400 px-1">
+        <span id="questionCategoryBadge" class="px-3 py-1 rounded-full bg-slate-800/90 border border-slate-700 text-indigo-300">
+          Lesson
+        </span>
+        <span>
+          <span data-i18n-en="Question" data-i18n-ar="السؤال">Question</span> 
+          <span id="currentQuestionNum" class="text-white font-mono font-bold">1</span> 
+          <span data-i18n-en="of" data-i18n-ar="من">of</span> 
+          <span id="totalQuestionsNum" class="font-mono">12</span>
+        </span>
+      </div>
+
+      <!-- Speedrun Countdown Bar (Conditional) -->
+      <div id="speedrunBarContainer" class="hidden flex-col gap-1 px-1">
+        <div class="flex justify-between text-[11px] font-bold text-rose-400">
+          <span><i class="fa-solid fa-stopwatch mr-1"></i> <span data-i18n-en="Speedrun Timer" data-i18n-ar="مؤقت السرعة">Speedrun Timer</span></span>
+          <span id="speedrunTimerText" class="font-mono">45s</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+          <div id="speedrunTimerProgress" class="bg-rose-500 h-1.5 transition-all duration-1000" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- Question Frame -->
+      <div id="questionCard" class="glass-panel rounded-3xl p-6 md:p-8 flex flex-col gap-4 pop-in relative">
+        <div class="flex items-start justify-between gap-3">
+          <span id="qTypeBadge" class="text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+            Type
+          </span>
+          <span id="questionValueBadge" class="text-xs font-mono font-bold text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20">
+            +15 XP
+          </span>
+        </div>
+
+        <h3 id="questionText" class="text-base md:text-lg font-bold text-slate-100 leading-snug">
+          Loading question text...
+        </h3>
+
+        <!-- Dynamic Body: Injected according to question type -->
+        <div id="dynamicBody" class="w-full mt-2">
+          <!-- Injected via app.js -->
+        </div>
+
+        <!-- Feedback & Decrypted Review Banner -->
+        <div id="feedbackBanner" class="hidden mt-3 p-4 rounded-2xl text-xs md:text-sm leading-relaxed border transition-all">
+          <div id="feedbackTitle" class="font-extrabold flex items-center gap-2 mb-1.5"></div>
+          <div id="feedbackExplanation" class="text-slate-300 font-normal leading-relaxed"></div>
+          <div class="mt-3.5 flex justify-end">
+            <button id="nextBtn" onclick="nextQuestion()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs md:text-sm transition flex items-center gap-2 shadow-lg shadow-indigo-600/30">
+              <span data-i18n-en="Next Challenge" data-i18n-ar="التحدي التالي">Next Challenge</span> 
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. ASSESSMENT SUMMARY / SCORECARD SCREEN -->
+    <div id="resultScreen" class="hidden glass-panel rounded-3xl p-6 md:p-9 text-center flex-col items-center gap-6 pop-in">
+      <div id="resultIconBox" class="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shadow-xl">
+        <!-- Injected icon -->
+      </div>
+      <div>
+        <h2 id="resultTitle" class="text-2xl md:text-3xl font-black text-white" data-i18n-en="Assessment Completed" data-i18n-ar="اكتمل التقييم بنجاح">
+          Assessment Completed
+        </h2>
+        <p id="resultSubtitle" class="text-xs md:text-sm text-slate-400 mt-1 max-w-md mx-auto">
+          Review your verified performance breakdown
+        </p>
+      </div>
+
+      <!-- Core Stats Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl text-center">
+        <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-semibold mb-1" data-i18n-en="Final Score" data-i18n-ar="النتيجة النهائية">Final Score</div>
+          <div id="resFinalScore" class="text-2xl font-black text-amber-400 font-mono">0</div>
+        </div>
+        <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-semibold mb-1" data-i18n-en="Accuracy" data-i18n-ar="نسبة الدقة">Accuracy</div>
+          <div id="resAccuracy" class="text-2xl font-black text-emerald-400 font-mono">0%</div>
+        </div>
+        <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-semibold mb-1" data-i18n-en="Rank Title" data-i18n-ar="الرتبة المكتسبة">Rank Title</div>
+          <div id="resFinalRank" class="text-xs md:text-sm font-black text-indigo-400">Novice</div>
+        </div>
+        <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
+          <div class="text-[11px] text-slate-400 font-semibold mb-1" data-i18n-en="Best Streak" data-i18n-ar="أطول سلسلة">Best Streak</div>
+          <div id="resMaxStreak" class="text-2xl font-black text-orange-400 font-mono">0</div>
+        </div>
+      </div>
+
+      <!-- Lesson Breakdown Analytics -->
+      <div class="w-full max-w-xl bg-slate-900/80 p-5 rounded-2xl border border-slate-800 text-left flex flex-col gap-3">
+        <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-2">
+          <i class="fa-solid fa-chart-simple text-indigo-400"></i>
+          <span data-i18n-en="Lesson Competency Breakdown" data-i18n-ar="تحليل الأداء حسب دروس المنهج">Lesson Competency Breakdown</span>
+        </h4>
+        <div id="lessonBreakdownContainer" class="flex flex-col gap-3 mt-1">
+          <!-- Dynamically populated via app.js -->
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap gap-3 justify-center mt-1">
+        <button onclick="returnToMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-5 py-2.5 rounded-xl text-xs md:text-sm transition border border-slate-700">
+          <i class="fa-solid fa-house mr-1.5"></i> <span data-i18n-en="Mode Menu" data-i18n-ar="قائمة الأنماط">Mode Menu</span>
+        </button>
+        <button onclick="startAssessmentWithCurrentMode()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs md:text-sm transition shadow-lg shadow-indigo-600/30 flex items-center gap-2">
+          <i class="fa-solid fa-rotate-right"></i> <span data-i18n-en="Reshuffle & Retry (Fresh Questions)" data-i18n-ar="إعادة بأسئلة جديدة غير مكررة">Reshuffle & Retry (Fresh Questions)</span>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-4 text-center text-xs text-slate-500 border-t border-slate-800/80">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>
+        <span>Chapter 1: Multi-Mode Mastery</span> • 
+        <span class="text-slate-400">High School / Baccalaureate AI Curriculum</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/abdelrahmaans/Bakaloria-Chapter-1.git" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-400 transition flex items-center gap-1.5 text-slate-400">
+          <i class="fa-brands fa-github"></i>
+          <span>GitHub Repository</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Engine -->
+  <script src="app.js"></script>
+</body>
+</html>
